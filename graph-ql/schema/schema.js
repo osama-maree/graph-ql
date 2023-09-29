@@ -12,8 +12,8 @@ type Query{
 }
 type Mutation{
     createTodo(content:String!):Todo!
-    toggleTodo(id:ID!,completed:Boolean!):Todo!
-    deleteTodo(id:ID!):Todo!
+    toggleTodo(id:String!,completed:Boolean!):Todo!
+    deleteTodo(id:String!):Todo!
 }
 `);
 module.exports = schema;

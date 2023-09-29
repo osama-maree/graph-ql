@@ -17,3 +17,13 @@ export const FETCH_TASK = gql`
     }
   }
 `;
+
+export const TOGGLE_TODO = gql`
+  mutation ToggleTodo($id: String!, $completed: Boolean!) {
+    toggleTodo(id: $id, completed: $completed) {
+      _id
+      content
+      completed
+    }
+  }
+`;
