@@ -27,3 +27,13 @@ export const TOGGLE_TODO = gql`
     }
   }
 `;
+
+export const DELETE_TODO = gql`
+  mutation DeleteTodo($id: String!) {
+    deleteTodo(id: $id) {
+      _id
+      content
+      completed
+    }
+  }
+`;

@@ -1,19 +1,21 @@
 import { Box, Typography, TextField } from "@mui/material";
 import { useStyles } from "./style/useStyle";
-import UncompletedItem from "./component/UncompletedItem";
-import CompletedItem from "./component/CompletedItem";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_TODO, FETCH_TASK, TOGGLE_TODO } from "./feature/query";
-interface todo {
-  _id: String;
-  completed: Boolean;
-  content: String;
-}
+import {
+  CREATE_TODO,
+  DELETE_TODO,
+  FETCH_TASK,
+  TOGGLE_TODO,
+} from "./feature/query";
+import Item from "./component/Item";
+import { todo } from "./feature/Interfaces";
+
 const App: React.FunctionComponent<any> = () => {
   const classes = useStyles();
-  const [createTodo] = useMutation(CREATE_TODO); 
-  const [toggleTodo] = useMutation(TOGGLE_TODO); 
+  const [createTodo] = useMutation(CREATE_TODO);
+  const [toggleTodo] = useMutation(TOGGLE_TODO);
+  const [deleteTodo] = useMutation(DELETE_TODO);
   const [text, setText] = useState<String>("");
   const { data, refetch, loading } = useQuery(FETCH_TASK);
   const [completedTasks, setCompletedTasks] = useState<todo[]>([]);
@@ -37,7 +39,11 @@ const App: React.FunctionComponent<any> = () => {
     }
   };
   const handleComplete = async (id: String, completed: Boolean) => {
-    await toggleTodo({ variables: { id:id, completed: completed } });
+    await toggleTodo({ variables: { id, completed } });
+    refetch();
+  };
+  const handleDelete = async (id: string) => {
+    await deleteTodo({ variables: { id } });
     refetch();
   };
   return (
@@ -79,10 +85,11 @@ const App: React.FunctionComponent<any> = () => {
               component={"div"}
             >
               {uncompletedTasks?.map((todo: todo) => (
-                <UncompletedItem
+                <Item
                   key={todo._id}
                   todo={todo}
                   handleComplete={handleComplete}
+                  handleDelete={handleDelete}
                 />
               ))}
             </Typography>
@@ -98,10 +105,11 @@ const App: React.FunctionComponent<any> = () => {
                 </Typography>
               )}
               {completedTasks.map((todo: todo) => (
-                <CompletedItem
-                  todo={todo}
+                <Item
                   key={todo._id}
+                  todo={todo}
                   handleComplete={handleComplete}
+                  handleDelete={handleDelete}
                 />
               ))}
             </Typography>
