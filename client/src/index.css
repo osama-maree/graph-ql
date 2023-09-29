@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Neucha&family=Roboto:wght@400;700&display=swap');
+*{
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: "Poppins Sans", sans-serif;
+  background-image: linear-gradient(
+    to right,
+    #a245b3,
+    #863aa3,
+    #6b2f92,
+    #502581,
+    #351b70,
+    #3c1565,
+    #400f5b,
+    #420951,
+    #570d4b,
+    #661845,
+    #712641,
+    #79353f
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input[type=checkbox] {
+  width: 20px;
+  height: 20px;
+  accent-color: lime;
+}
