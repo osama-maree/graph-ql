@@ -1,58 +1,42 @@
-import { makeStyles } from "@material-ui/core";
 import { Box, Typography, TextField } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-const useStyles = makeStyles(() => ({
-  app: {
-    color: "#ffffffb0",
-    backgroundColor: "#ffffff21",
-    width: "600px",
-    borderRadius: "7px",
-    boxShadow: "0 15px 40px -20px black",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: "28px",
-    fontWeight: 700,
-  },
-  inputTodo: {
-    width: "100%",
-    fontSize: "20px",
-    backgroundColor: "#f4f4f435",
-    borderRadius: "7px",
-    "&::placeholder": {
-      color: "#ffffff70 !important",
-    },
-  },
-  todo: {
-    display: "flex",
-    flexDirection: "column",
-    gap: ".8rem",
-  },
-  item: {
-    backgroundColor: "#f4f4f4bd",
-    padding: "1rem 1.5rem",
-    borderRadius: "7px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "black",
-  },
-  span: {
-    display: "flex",
-    alignItems: "center",
-    gap: ".5rem",
-  },
-  completedItem: {
-    backgroundColor: "#74c674",
-    textDecoration: "line-through",
-  },
-}));
-
+import { useStyles } from "./style/useStyle";
+import UncompletedItem from "./component/UncompletedItem";
+import CompletedItem from "./component/CompletedItem";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { CREATE_TODO, FETCH_TASK } from "./feature/query";
+interface todo {
+  _id: String;
+  completed: Boolean;
+  content: String;
+}
 const App: React.FunctionComponent<any> = () => {
   const classes = useStyles();
-
+  const [createTodo] = useMutation(CREATE_TODO); // const [createTodo] = useMutation(CREATE_TODO);
+  const [text, setText] = useState<String>("");
+  const { data } = useQuery(FETCH_TASK);
+  const [completedTasks, setCompletedTasks] = useState<todo[]>([]);
+  const [uncompletedTasks, setUnCompletedTasks] = useState<todo[]>([]);
+  useEffect(() => {
+    if (data) {
+      setCompletedTasks(data.getTodo.filter((todo: todo) => todo.completed));
+      setUnCompletedTasks(data.getTodo.filter((todo: todo) => !todo.completed));
+    }
+  }, [data]);
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      try {
+        const { data } = await createTodo({ variables: { content: text } });
+        const newTodo: todo = data?.createTodo;
+        setUnCompletedTasks((prev) => [...(prev || []), newTodo]);
+        setText(() => "");
+      } catch (error) {
+        console.error("Error creating post:", error);
+      }
+    }
+  };
   return (
-    <Box className={classes.app} p={3}>
+    <Box className={classes.app} p={3} mt={5}>
       <Typography
         variant="h4"
         component={"h2"}
@@ -63,6 +47,11 @@ const App: React.FunctionComponent<any> = () => {
       </Typography>
       <TextField
         className={classes.inputTodo}
+        value={text}
+        onKeyPress={handleKeyPress}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setText(e.target.value)
+        }
         inputProps={{
           style: {
             color: "white",
@@ -82,13 +71,9 @@ const App: React.FunctionComponent<any> = () => {
           variant="body2"
           component={"div"}
         >
-          <Typography className={classes.item} component={"div"} mb={2}>
-            <Typography className={classes.span} component={"span"}>
-              <input type="checkbox" />
-              ssss
-            </Typography>
-            <CloseIcon sx={{ color: "#555555" }} />
-          </Typography>
+          {uncompletedTasks?.map((todo: todo) => (
+            <UncompletedItem key={todo._id} text={todo.content} />
+          ))}
         </Typography>
 
         <Typography
@@ -96,19 +81,14 @@ const App: React.FunctionComponent<any> = () => {
           variant="body2"
           component={"div"}
         >
-          <Typography variant="body1" color="white">
-            Complted Task
-          </Typography>
-          <Typography
-            className={`${classes.item} ${classes.completedItem}`}
-            component={"div"}
-          >
-            <span>
-              <input type="checkbox" />
-              click
-            </span>
-            <CloseIcon />
-          </Typography>
+          {!!completedTasks.length && (
+            <Typography variant="body1" color="white">
+              Completed Task
+            </Typography>
+          )}
+          {completedTasks.map((todo: todo) => (
+            <CompletedItem text={todo.content} key={todo._id} />
+          ))}
         </Typography>
       </Typography>
     </Box>

@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Neucha&family=Roboto:wght@400;700&display=swap');
-*{
+@import url("https://fonts.googleapis.com/css2?family=Neucha&family=Roboto:wght@400;700&display=swap");
+* {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  height: 100vh;
   font-family: "Poppins Sans", sans-serif;
   background-image: linear-gradient(
     to right,
@@ -26,7 +25,7 @@ body {
   align-items: center;
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
   width: 20px;
   height: 20px;
   accent-color: lime;

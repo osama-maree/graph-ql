@@ -5,6 +5,8 @@ const connectDB = require("./model/connection.js");
 const userQuery = require("./userQuery/userQuery.js");
 const userMutations = require("./userMutation/userMutation.js");
 const schema = require("./schema/schema.js");
+const cors= require("cors")
+app.use(cors())
 connectDB();
 const resolvers = {
   ...userQuery,
